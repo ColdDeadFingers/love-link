@@ -1,4 +1,4 @@
-import {auth, googleProvider} from "../config/firebase"
+import {auth, googleProvider, twitterProvider} from "../config/firebase"
 import { createUserWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth"
 import React from "react";
 
@@ -18,6 +18,15 @@ export default function Auth() {
     const signInWithGoogle = async () => {
         try{
         await signInWithPopup(auth, googleProvider)
+        } catch (err){
+            console.error(err)
+            console.log("well that happened")
+        }
+    };
+
+    const signInWithTwitter = async () => {
+        try{
+        await signInWithPopup(auth, twitterProvider)
         } catch (err){
             console.error(err)
             console.log("well that happened")
@@ -50,6 +59,8 @@ export default function Auth() {
             <button onClick={signIn}> Sign In </button>
 
             <button onClick={signInWithGoogle}> Sign In With Google</button>
+
+            <button onClick={signInWithTwitter}> Sign In With Twitter</button>
 
             <button onClick={logout}> Logout </button>
         </div>
