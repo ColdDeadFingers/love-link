@@ -4,17 +4,19 @@ import AuthPage from './components/auth'
 import { db, auth, storage } from './config/firebase';
 import {getDocs, collection, addDoc, deleteDoc, doc, updateDoc} from "firebase/firestore";
 import { ref, uploadBytes } from 'firebase/storage';
+import Hero from './components/Hero';
+import Display from './components/Display';
 
 
 
 function App() {
-  const [movieList, setMovieList] = useState([])
+  const [userList, setUserList] = useState([])
 
 
-  //New Movie States
-  const [newMovieTitle, setNewMovieTitle] = useState("");
+  //New User States
+  const [newUserTitle, setNewUserTitle] = useState("");
   const [newReleaseDate, setNewReleaseDate] = useState("");
-  const [isNewMovieOscar, setIsNewMovieOscar] = useState(false);
+  const [isNewUserOscar, setIsNewUserOscar] = useState(false);
 
   //Update Title State
   const [updatedTitle, setUpdatedTitle] = useState("");
@@ -22,11 +24,11 @@ function App() {
   //File Upload State
   const [fileUpload, setFileUpload] = useState(null)
 
-  const moviesCollectionRef = collection(db, "users")
+  const usersCollectionRef = collection(db, "users")
 
-  const getMovieList = async () => {
+  const getUserList = async () => {
     try{
-    const data = await getDocs(moviesCollectionRef);
+    const data = await getDocs(usersCollectionRef);
     const filteredData = data.docs.map((doc) => ({
       ...doc.data(), 
       id: doc.id,
@@ -34,52 +36,52 @@ function App() {
 
     console.log(filteredData);
 
-    setMovieList(filteredData);
+    setUserList(filteredData);
     } catch (err){
       console.error(err)
     }
   };
 
-  const deleteMovie = async (id) => {
-    const movieDoc = doc(db, "users", id )
-    await deleteDoc(movieDoc);
+  const deleteUser = async (id) => {
+    const userDoc = doc(db, "users", id )
+    await deleteDoc(userDoc);
   }
 
-  const updateMovieTitle = async (id) => {
-    const movieDoc = doc(db, "users", id )
-    await updateDoc(movieDoc, {title: updatedTitle});
+  const updateUserTitle = async (id) => {
+    const userDoc = doc(db, "users", id )
+    await updateDoc(userDoc, {title: updatedTitle});
   }
 
-  const onSubmitMovie = async () => {
+  const onSubmitUser = async () => {
     try{
-    await addDoc(moviesCollectionRef, {
-        title: newMovieTitle,
+    await addDoc(usersCollectionRef, {
+        title: newUserTitle,
         releaseDate: newReleaseDate,
-        receivedAnOscar: isNewMovieOscar,
+        receivedAnOscar: isNewUserOscar,
         userId: auth?.currentUser?.uid, 
       });
 
-      getMovieList();
+      getUserList();
     } catch (err){
       console.error(err);
     }
   }
 
   useEffect(() => {
-    const getMovieList = async() => {
+    const getUserList = async() => {
       try{
-        const data = await getDocs(moviesCollectionRef);
+        const data = await getDocs(usersCollectionRef);
         const filteredData = data.docs.map((doc) => ({
           ...doc.data(),
           id: doc.id,
         }));
-        setMovieList(filteredData);
+        setUserList(filteredData);
       } catch(err){
         console.error(err);
       }
     };
-    getMovieList ();
-  }, [onSubmitMovie]);
+    getUserList ();
+  }, [onSubmitUser]);
 
 
   const uploadFile = async () => {
@@ -95,13 +97,15 @@ function App() {
 
   return (
     <div className='App'>
-          <AuthPage />
+          <Hero />
+          <Display />
+       { /* <AuthPage />*/}   
 
-          <div>
-            <input 
+        {/*  <div>
+             <input 
 
-            placeholder='Movie title' 
-            onChange={(e) => setNewMovieTitle(e.target.value)}
+            placeholder='User title' 
+            onChange={(e) => setNewUserTitle(e.target.value)}
             />
 
             <input
@@ -112,31 +116,31 @@ function App() {
 
             <input 
             type="checkbox" 
-            checked = {isNewMovieOscar}
-            onChange={(e) => setIsNewMovieOscar(e.target.checked)}  
+            checked = {isNewUserOscar}
+            onChange={(e) => setIsNewUserOscar(e.target.checked)}  
             />
 
             <label> Received an Oscar </label>
-            <button onClick={onSubmitMovie}>Submit Movie</button>
+            <button onClick={onSubmitUser}>Submit User</button>
 
 
           </div>
 
           <div>
-            {movieList.map((movie) => (
+            {userList.map((user) => (
               <div>
-                <h1> {movie.title} </h1>
+                <h1> {user.title} </h1>
 
-                <p>Release Date: {movie.releaseDate} </p>
+                <p>Release Date: {user.releaseDate} </p>
 
-                <button onClick={() => deleteMovie(movie.id)}> Delete Movie</button>
+                <button onClick={() => deleteUser(user.id)}> Delete User</button>
 
                 <input 
                 placeholder='new title'
                 onChange={(e) => setUpdatedTitle(e.target.value)}
                 
                 />
-                <button onClick={() => updateMovieTitle(movie.id)} >Update Title</button>
+                <button onClick={() => updateUserTitle(user.id)} >Update Title</button>
 
               </div>
             ))}
@@ -145,7 +149,7 @@ function App() {
               <div>
                 <input type="file" onChange={(e) => setFileUpload(e.target.files[0])}/>
                 <button onClick={uploadFile}> Upload File</button>
-              </div>
+              </div> */}
     </div>
 
 
